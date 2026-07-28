@@ -72,6 +72,13 @@ export default function Home() {
         <VoltageField />
         <div className="hero-noise" /><div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" />
         <div className="hero-topline"><span>CAIEIRAS • SÃO PAULO</span><span>ENGENHARIA EM CAMPO</span><span>ATENDIMENTO 24H</span></div>
+        <div className="transformer-stage" aria-hidden="true">
+          <img className="transformer transformer-left" src="/assets/transformer-left.png" alt="" />
+          <img className="transformer transformer-right" src="/assets/transformer-right.png" alt="" />
+          <div className="electric-arc arc-left"><i /><i /><i /></div>
+          <div className="electric-arc arc-right"><i /><i /><i /></div>
+          <div className="electric-flash" />
+        </div>
         <div className="hero-logo-wrap" aria-label="Shelby Eletromecânica">
           <span className="logo-coordinate c1">00° 00&apos; 00&quot; S</span><span className="logo-coordinate c2">ENERGIA / 03</span>
           <div className="logo-aura" /><img className="hero-logo-preserved" src="/assets/shelby-logo.png" alt="Logo Shelby Eletromecânica" />
