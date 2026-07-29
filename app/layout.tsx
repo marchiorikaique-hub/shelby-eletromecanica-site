@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
+// The site is a self-contained presentation and can be pre-rendered for Pages.
+export const dynamic = "force-static";
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
