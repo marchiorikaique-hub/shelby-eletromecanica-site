@@ -28,7 +28,8 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /shelby-eletromecanica-site
+          # The production site is served from the domain root.
+          NEXT_PUBLIC_BASE_PATH: ""
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/client
