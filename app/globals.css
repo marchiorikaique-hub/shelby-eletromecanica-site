@@ -288,3 +288,64 @@ footer { background: #050d0c; border-top: 1px solid var(--line); padding: 80px 5
 .photo-slot::after { inset:0; border:0; transform:none; background:linear-gradient(180deg,rgba(4,18,15,.12),rgba(4,18,15,.88)); box-shadow:inset 0 0 0 1px rgba(69,255,221,.2); }
 .photo-slot span,.photo-slot i { text-shadow:0 2px 12px #000; }.photo-slot:hover .work-photo { transform:scale(1.08); filter:saturate(1.1) contrast(1.18) brightness(.88); }.photo-slot:hover::after { animation:none; background:linear-gradient(180deg,rgba(4,18,15,.05),rgba(4,18,15,.64)); }
 .form-guidance,.form-nav span { color:#86a79f; font:700 8px/1.5 monospace; letter-spacing:.09em; text-transform:uppercase; }.form-guidance { margin:18px 0 0; }.form-nav span { text-align:right; }
+
+/* ============================================================
+   REDESIGN — gunmetal + cobre + teal, sólido metálico, arredondado
+   ============================================================ */
+:root {
+  --sand: #c07a45;            /* antes pastel; agora COBRE metálico */
+  --copper: #c07a45;
+  --copper-lite: #dd9358;
+  --steel: #c7ccd0;
+  --graphite: #0a0e0f;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+/* --- cantos arredondados em tudo --- */
+.nav-cta { border-radius: 999px; padding: 13px 22px; gap: 0; }
+.btn-primary { border-radius: 999px; gap: 0; }
+.service-card { border-radius: var(--radius); }
+.warning-plate, .plate-inner, .plate-face { border-radius: 18px; }
+.photo-slot, .work-photo { border-radius: var(--radius); }
+.quote-form { border-radius: 20px; }
+.option-grid button { border-radius: var(--radius-sm); }
+.quote-form input, .quote-form select, .quote-form textarea { border-radius: var(--radius-sm) !important; }
+.form-next { border-radius: 999px; }
+.evidence-card { border-radius: var(--radius); }
+.trust-strip { border-radius: var(--radius); overflow: hidden; }
+.standard-list span { border-radius: 999px; }
+.quote-progress > div, .quote-progress > div i { border-radius: 999px; }
+
+/* --- seções claras: bege pastel -> AÇO escovado metálico --- */
+.intro { background: linear-gradient(135deg,#d6dbdf,#c1c7cd 55%,#cfd4d8); color:#131a1c; }
+.method { background: linear-gradient(135deg,#d4d9dd,#bfc5cb 60%,#ccd1d5); color:#131a1c; }
+.field-gallery { background: linear-gradient(135deg,#d4d9dd,#c0c6cc); color:#122320; }
+.safety-copy { background: linear-gradient(150deg,#cdd2d6,#bcc2c8); color:#121a1c; }
+.evidence-light { background: linear-gradient(135deg,#cfd4d8,#bdc3c9); }
+
+/* --- placas: verde/laranja pastel -> aço + cobre --- */
+.plate-front { background-color: #c6cbcf; }
+.warning-plate:nth-child(even) .plate-front { background-color: #adb3b9; }
+.warning-plate:nth-child(3n) .plate-front { background-color: #c07a45; }
+
+/* --- método: passo numerado em cobre no lugar da seta --- */
+.process-item { grid-template-columns: 58px 1fr auto; }
+.process-step { align-self: center; color: var(--copper); font: 800 26px/1 "Arial Narrow", Arial, sans-serif; font-style: normal; letter-spacing: -.02em; }
+
+/* --- faixa do versículo --- */
+.scripture { max-width: 1320px; margin: auto; padding: 74px 7vw; text-align: center; background: radial-gradient(circle at 50% 0,#14201f,#0a0e0f 70%); border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-top: 1px solid rgba(192,122,69,.4); }
+.scripture p { margin: 0 auto; max-width: 780px; color: #e8e1d1; font-family: "Arial Narrow", Arial, sans-serif; font-style: italic; font-size: clamp(19px,2.2vw,27px); line-height: 1.5; }
+.scripture span { display: inline-block; margin-top: 20px; color: var(--copper-lite); text-transform: uppercase; font: 800 10px monospace; letter-spacing: .3em; }
+
+/* --- aura do logo: tira o verde neon, deixa teal discreto e a logo legível --- */
+.logo-aura { background: radial-gradient(circle, rgba(22,120,110,.42) 0 14%, rgba(10,58,53,.5) 38%, rgba(6,22,20,.9) 62%, transparent 74%); filter: blur(16px); box-shadow: 0 0 60px rgba(30,150,140,.26), inset 0 0 55px rgba(0,0,0,.92); }
+.hero-logo-wrap:hover .hero-logo-head { filter: drop-shadow(0 0 12px rgba(40,200,180,.6)); }
+.voltage-field { opacity: .6; }
+
+/* --- micro polimento --- */
+.nav-cta { box-shadow: 0 8px 22px rgba(57,222,208,.20); }
+.btn-primary:hover { background: var(--copper-lite); }
+.emergency-phone span { display: none; }
+@media(max-width:520px){ .scripture { padding: 54px 24px; } }
+

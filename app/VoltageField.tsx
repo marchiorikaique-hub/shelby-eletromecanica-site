@@ -58,12 +58,12 @@ export function VoltageField() {
             vec3 light = normalize(vec3(-.4, .75, 1.0));
             float diffuse = max(dot(normalize(vNormal), light), 0.0);
             float fresnel = pow(1.0 - max(dot(normalize(vNormal), normalize(cameraPosition - vPosition)), 0.0), 2.4);
-            vec3 deep = vec3(.0, .055, .045);
-            vec3 electric = vec3(.0, .94, .62);
-            vec3 core = vec3(.02, .42, .25);
-            vec3 color = mix(deep, core, diffuse*.62);
-            color = mix(color, electric, fresnel*.88 + diffuse*.38);
-            gl_FragColor = vec4(color, .98);
+            vec3 deep = vec3(.0, .05, .05);
+            vec3 electric = vec3(.16, .82, .76);
+            vec3 core = vec3(.02, .30, .27);
+            vec3 color = mix(deep, core, diffuse*.55);
+            color = mix(color, electric, fresnel*.72 + diffuse*.22);
+            gl_FragColor = vec4(color, .9);
           }
         `,
       });
