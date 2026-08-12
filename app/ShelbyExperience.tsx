@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { VoltageField } from "./VoltageField";
 
 declare const __BASE_PATH__: string;
@@ -26,8 +26,7 @@ const initialBrief: Brief = { service: "", urgency: "", installation: "", city: 
 
 export default function ShelbyExperience() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [sceneProgress, setSceneProgress] = useState(0);
+  const mainRef = useRef<HTMLElement>(null);
   const [step, setStep] = useState(1);
   const [brief, setBrief] = useState<Brief>(initialBrief);
   const [sent, setSent] = useState(false);
@@ -37,9 +36,12 @@ export default function ShelbyExperience() {
   useEffect(() => {
     let ticking = false;
     const apply = () => {
-      const max = document.documentElement.scrollHeight - innerHeight;
-      setProgress(max ? scrollY / max : 0);
-      setSceneProgress(Math.min(scrollY / (innerHeight * 1.15), 1));
+      const el = mainRef.current;
+      if (el) {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        el.style.setProperty("--sp", String(max ? scrollY / max : 0));
+        el.style.setProperty("--scene", String(Math.min(scrollY / (innerHeight * 1.15), 1)));
+      }
       ticking = false;
     };
     const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(apply); } };
@@ -48,8 +50,15 @@ export default function ShelbyExperience() {
       { threshold: 0.12 }
     );
     document.querySelectorAll(".reveal").forEach((el) => reveal.observe(el));
+    // Pause the hero's WebGL field and CSS animations once it scrolls off screen.
+    const hero = document.querySelector(".hero");
+    const heroIdle = new IntersectionObserver(
+      ([e]) => hero?.classList.toggle("is-idle", !e.isIntersecting),
+      { threshold: 0 }
+    );
+    if (hero) heroIdle.observe(hero);
     apply(); addEventListener("scroll", onScroll, { passive: true });
-    return () => { removeEventListener("scroll", onScroll); reveal.disconnect(); };
+    return () => { removeEventListener("scroll", onScroll); reveal.disconnect(); heroIdle.disconnect(); };
   }, []);
 
   const selectedService = useMemo(() => services.find((item) => item.title === brief.service)?.title || "", [brief.service]);
@@ -66,8 +75,8 @@ export default function ShelbyExperience() {
   };
 
   return (
-    <main style={{ "--scroll-progress": progress } as CSSProperties}>
-      <div className="scroll-line" style={{ transform: `scaleX(${progress})` }} />
+    <main ref={mainRef}>
+      <div className="scroll-line" />
       <nav className="nav">
         <a className="brand" href="#inicio" aria-label="Shelby Eletromecânica"><img src={asset("/assets/shelby-logo.png")} alt="" /><span>SHELBY<small>ELETROMECÂNICA</small></span></a>
         <button className="menu-toggle" aria-label="Abrir menu" onClick={() => setMenuOpen(!menuOpen)}><i /><i /></button>
@@ -82,13 +91,13 @@ export default function ShelbyExperience() {
         <div className="hero-noise" /><div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" />
         <div className="hero-topline"><span>CAIEIRAS • SÃO PAULO</span><span>ENGENHARIA EM CAMPO</span><span>PLANTÃO EMERGENCIAL</span></div>
         <div className="transformer-stage" aria-hidden="true">
-          <img className="transformer transformer-left" style={{ transform: `translate3d(${-8 - sceneProgress * 15}vw, ${sceneProgress * 58}px, 0) scale(${1 + sceneProgress * .12}) rotate(${-7 + sceneProgress * 5}deg)` }} src={asset("/assets/transformer-left.png")} alt="" />
-          <img className="transformer transformer-right" style={{ transform: `translate3d(${8 + sceneProgress * 15}vw, ${sceneProgress * 50}px, 0) scale(${1 + sceneProgress * .12}) rotate(${7 - sceneProgress * 5}deg)` }} src={asset("/assets/transformer-right.png")} alt="" />
-          <div className="electric-arc arc-left" style={{ opacity: .16 + sceneProgress * .8 }}><i /><i /><i /></div>
-          <div className="electric-arc arc-right" style={{ opacity: .16 + sceneProgress * .8 }}><i /><i /><i /></div>
-          <div className="electric-flash" style={{ opacity: .12 + sceneProgress * .88, transform: `translate(-50%,-50%) scale(${.55 + sceneProgress * .7})` }} />
+          <img className="transformer transformer-left" src={asset("/assets/transformer-left.png")} alt="" />
+          <img className="transformer transformer-right" src={asset("/assets/transformer-right.png")} alt="" />
+          <div className="electric-arc arc-left"><i /><i /><i /></div>
+          <div className="electric-arc arc-right"><i /><i /><i /></div>
+          <div className="electric-flash" />
         </div>
-        <div className="hero-logo-wrap" style={{ transform: `translate3d(0, ${-sceneProgress * 170}px, 0) scale(${1 - sceneProgress * .25}) rotate(${sceneProgress * 10}deg)` }} aria-label="Shelby Eletromecânica">
+        <div className="hero-logo-wrap" aria-label="Shelby Eletromecânica">
           <span className="logo-coordinate c1">CAMPO ENERGIZADO</span><span className="logo-coordinate c2">ENERGIA EM MOVIMENTO</span>
           <div className="logo-aura" /><img className="hero-logo-preserved" src={asset("/assets/shelby-logo.png")} alt="Logo Shelby Eletromecânica" /><img className="hero-logo-head" src={asset("/assets/shelby-logo.png")} alt="" aria-hidden="true" />
           <span className="logo-ring ring-a" /><span className="logo-ring ring-b" />

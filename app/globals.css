@@ -349,3 +349,13 @@ footer { background: #050d0c; border-top: 1px solid var(--line); padding: 80px 5
 .emergency-phone span { display: none; }
 @media(max-width:520px){ .scripture { padding: 54px 24px; } }
 
+/* ============================================================
+   PERFORMANCE — scroll dirigido por variável CSS (sem re-render do React)
+   e hero ocioso pausa animações + WebGL quando sai da tela
+   ============================================================ */
+.scroll-line { transform: scaleX(var(--sp, 0)); }
+.transformer-left { transform: translate3d(calc(-8vw - var(--scene,0) * 15vw), calc(var(--scene,0) * 58px), 0) scale(calc(1 + var(--scene,0) * .12)) rotate(calc(-7deg + var(--scene,0) * 5deg)); }
+.transformer-right { transform: translate3d(calc(8vw + var(--scene,0) * 15vw), calc(var(--scene,0) * 50px), 0) scale(calc(1 + var(--scene,0) * .12)) rotate(calc(7deg - var(--scene,0) * 5deg)); }
+.hero-logo-wrap { transform: translate3d(0, calc(var(--scene,0) * -170px), 0) scale(calc(1 - var(--scene,0) * .25)) rotate(calc(var(--scene,0) * 10deg)); }
+.hero.is-idle *, .hero.is-idle { animation-play-state: paused !important; }
+

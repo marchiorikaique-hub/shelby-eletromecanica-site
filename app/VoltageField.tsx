@@ -19,7 +19,7 @@ export function VoltageField() {
       camera.position.set(0, 0, 6.5);
 
       const renderer = new THREE.WebGLRenderer({ canvas: element, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 1.25));
       renderer.setClearColor(0x000000, 0);
 
       const uniforms = {
@@ -68,15 +68,15 @@ export function VoltageField() {
         `,
       });
 
-      const shell = new THREE.Mesh(new THREE.IcosahedronGeometry(2.04, 6), material);
+      const shell = new THREE.Mesh(new THREE.IcosahedronGeometry(2.04, 4), material);
       scene.add(shell);
       const points = new THREE.Points(
-        new THREE.IcosahedronGeometry(2.13, 5),
+        new THREE.IcosahedronGeometry(2.13, 4),
         new THREE.PointsMaterial({ color: 0x74fff0, size: 0.018, transparent: true, opacity: 0.55, sizeAttenuation: true })
       );
       scene.add(points);
       const rim = new THREE.Mesh(
-        new THREE.TorusGeometry(2.48, 0.008, 6, 120),
+        new THREE.TorusGeometry(2.48, 0.008, 6, 80),
         new THREE.MeshBasicMaterial({ color: 0x43ead9, transparent: true, opacity: 0.36 })
       );
       rim.rotation.x = 1.12;
@@ -93,9 +93,9 @@ export function VoltageField() {
         uniforms.pointer.value.set((event.clientX - rect.left) / rect.width - .5, -((event.clientY - rect.top) / rect.height - .5));
       };
       const onScroll = () => { uniforms.scroll.value = Math.min(scrollY / 1300, 1); };
-      let frame = 0;
       const clock = new THREE.Clock();
-      const render = () => {
+
+      const draw = () => {
         const elapsed = clock.getElapsedTime();
         uniforms.time.value = elapsed;
         shell.rotation.y = elapsed * .12 + uniforms.pointer.value.x * .45;
@@ -103,14 +103,29 @@ export function VoltageField() {
         points.rotation.copy(shell.rotation);
         rim.rotation.z = elapsed * .18;
         renderer.render(scene, camera);
-        frame = requestAnimationFrame(render);
       };
-      resize(); render();
+
+      // Only animate while the field is on screen and the tab is visible.
+      let frame = 0, onScreen = true;
+      const loop = () => { draw(); frame = requestAnimationFrame(loop); };
+      const running = () => onScreen && !document.hidden;
+      const start = () => { if (!frame && running()) { clock.getDelta(); frame = requestAnimationFrame(loop); } };
+      const stop = () => { if (frame) { cancelAnimationFrame(frame); frame = 0; } };
+      const sync = () => { running() ? start() : stop(); };
+
+      const io = new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; sync(); }, { threshold: 0 });
+      io.observe(element);
+      const onVis = () => sync();
+
+      resize(); start();
       addEventListener("resize", resize);
       addEventListener("pointermove", pointer, { passive: true });
       addEventListener("scroll", onScroll, { passive: true });
+      document.addEventListener("visibilitychange", onVis);
       clean = () => {
-        cancelAnimationFrame(frame); removeEventListener("resize", resize); removeEventListener("pointermove", pointer); removeEventListener("scroll", onScroll);
+        stop(); io.disconnect();
+        removeEventListener("resize", resize); removeEventListener("pointermove", pointer); removeEventListener("scroll", onScroll);
+        document.removeEventListener("visibilitychange", onVis);
         shell.geometry.dispose(); material.dispose(); points.geometry.dispose(); (points.material as THREE.Material).dispose(); rim.geometry.dispose(); (rim.material as THREE.Material).dispose(); renderer.dispose();
       };
     })();
