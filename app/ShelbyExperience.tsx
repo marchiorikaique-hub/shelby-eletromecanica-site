@@ -1,7 +1,6 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { VoltageField } from "./VoltageField";
 
 declare const __BASE_PATH__: string;
 
@@ -86,27 +85,19 @@ export default function ShelbyExperience() {
         </div>
       </nav>
 
-      <section className="hero hero-immersive" id="inicio">
-        <VoltageField />
-        <div className="hero-noise" /><div className="hero-orbit orbit-one" /><div className="hero-orbit orbit-two" />
-        <div className="hero-topline"><span>CAIEIRAS • SÃO PAULO</span><span>ENGENHARIA EM CAMPO</span><span>PLANTÃO EMERGENCIAL</span></div>
-        <div className="transformer-stage" aria-hidden="true">
-          <img className="transformer transformer-left" src={asset("/assets/transformer-left.png")} alt="" />
-          <img className="transformer transformer-right" src={asset("/assets/transformer-right.png")} alt="" />
-          <div className="electric-arc arc-left"><i /><i /><i /></div>
-          <div className="electric-arc arc-right"><i /><i /><i /></div>
-          <div className="electric-flash" />
+      <section className="hero hero-editorial" id="inicio">
+        <div className="hero-editorial-grid" aria-hidden="true" />
+        <div className="hero-editorial-field" aria-hidden="true" />
+        <div className="hero-editorial-topline"><span>CAIEIRAS • SÃO PAULO</span><span>SISTEMA / ONLINE</span></div>
+        <div className="hero-editorial-content">
+          <div className="hero-editorial-brand"><img src={asset("/assets/shelby-logo.png")} alt="" /><span>ENGENHARIA ELÉTRICA<br />ELETROMECÂNICA</span></div>
+          <div className="hero-editorial-kicker"><i /> TÉCNICA NO CAMPO • CONTINUIDADE NA OPERAÇÃO</div>
+          <h1>Energia para a<br /><em>operação continuar.</em></h1>
+          <p>Projetos, manutenção e proteção elétrica para empresas que não podem parar.</p>
+          <div className="hero-actions hero-editorial-actions"><a className="btn-primary" href="#diagnostico">Solicitar avaliação</a><a className="btn-link" href="#servicos">Ver soluções <i>↓</i></a></div>
         </div>
-        <div className="hero-logo-wrap" aria-label="Shelby Eletromecânica">
-          <span className="logo-coordinate c1">CAMPO ENERGIZADO</span><span className="logo-coordinate c2">ENERGIA EM MOVIMENTO</span>
-          <div className="logo-aura" /><img className="hero-logo-preserved" src={asset("/assets/shelby-logo.png")} alt="Logo Shelby Eletromecânica" /><img className="hero-logo-head" src={asset("/assets/shelby-logo.png")} alt="" aria-hidden="true" />
-          <span className="logo-ring ring-a" /><span className="logo-ring ring-b" />
-        </div>
-        <div className="hero-copy immersive-copy">
-          <p><b>Potência crítica.</b> Engenharia, manutenção e proteção para operações que não podem parar.</p>
-          <div className="hero-actions"><a className="btn-primary" href="#servicos">Explorar soluções</a><a className="btn-link" href="#diagnostico">Solicitar avaliação</a></div>
-        </div>
-        <div className="hero-foot"><span>Emergência elétrica</span><span className="scroll-hint">Desça e mova o cursor <i /></span><span>SCROLL PARA ATIVAR O CAMPO</span></div>
+        <aside className="hero-editorial-note"><span>01 / 03</span><i /><strong>DIAGNÓSTICO<br />EM CAMPO</strong><p>Entendemos o risco, priorizamos o que importa e devolvemos um plano técnico claro.</p></aside>
+        <div className="hero-editorial-bottom"><span>PLANTÃO EMERGENCIAL</span><span>PROJETOS • MANUTENÇÃO • PROTEÇÃO</span><span>ROLE PARA CONHECER</span></div>
       </section>
 
       <section className="trust-strip" aria-label="Diferenciais"><div><span>Segurança<br />operacional</span></div><div><span>Confiabilidade<br />técnica</span></div><div><span>Redução de<br />custos</span></div><div><span>Atendimento<br />especializado</span></div><div><span>Conformidade<br />técnica</span></div></section>
