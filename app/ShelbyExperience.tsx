@@ -85,19 +85,44 @@ export default function ShelbyExperience() {
         </div>
       </nav>
 
-      <section className="hero hero-editorial" id="inicio">
-        <img className="hero-editorial-photo" src={asset("/assets/hero-substation.jpg")} alt="" aria-hidden="true" />
-        <div className="hero-editorial-grid" aria-hidden="true" />
-        <div className="hero-editorial-topline"><span>CAIEIRAS • SÃO PAULO</span><span>SISTEMA / ONLINE</span></div>
-        <div className="hero-editorial-content">
-          <img className="hero-skull" src={asset("/assets/shelby-logo.png")} alt="Shelby Eletromecânica" />
-          <div className="hero-editorial-kicker"><i /> ENGENHARIA ELÉTRICA • MÉDIA E BAIXA TENSÃO</div>
-          <h1>Energia para a<br /><em>operação continuar.</em></h1>
-          <p>Projetos, manutenção e proteção elétrica para empresas que não podem parar.</p>
-          <div className="hero-actions hero-editorial-actions"><a className="btn-primary" href="#diagnostico">Solicitar avaliação</a><a className="btn-link" href="#servicos">Ver soluções</a></div>
+      <section
+        className="hero hero-cine"
+        id="inicio"
+        aria-label="Shelby Eletromecânica — engenharia elétrica"
+        style={{
+          "--photo": `url(${asset("/assets/hero-substation.jpg")})`,
+          "--skull": `url(${asset("/assets/shelby-logo.png")})`,
+        } as React.CSSProperties}
+      >
+        <div className="hc-photo" aria-hidden="true" />
+        <div className="hc-duotone" aria-hidden="true" />
+        <div className="hc-glow" aria-hidden="true" />
+        <div className="hc-scrim" aria-hidden="true" />
+        <div className="hc-vignette" aria-hidden="true" />
+        <div className="hc-rail" aria-hidden="true" />
+
+        <div className="hc-skull" role="img" aria-label="Caveira Shelby" />
+        <svg className="hc-arc" viewBox="0 0 120 101" aria-hidden="true">
+          <path className="arc-bolt" d="M60 4 L52 40 L66 44 L46 97" />
+          <path className="arc-bolt arc-bolt--b" d="M88 20 L78 46 L90 50 L74 88" />
+        </svg>
+
+        <div className="hc-inner">
+          <div className="hc-stage">
+            <p className="hc-kicker">Engenharia elétrica • Média e baixa tensão</p>
+            <h1 className="hc-title"><span className="hc-lead">Energia</span> para a operação continuar.</h1>
+            <p className="hc-sub">Projetos, manutenção e proteção elétrica para empresas que não podem parar.</p>
+            <div className="hc-cta">
+              <a className="hc-btn hc-btn--primary" href="#diagnostico">Solicitar avaliação
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </a>
+              <a className="hc-btn hc-btn--ghost" href="#servicos">Ver soluções
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              </a>
+            </div>
+            <div className="hc-foot" aria-hidden="true"><span /> Subestações · Proteção · Laudos · Atendimento 24h</div>
+          </div>
         </div>
-        <aside className="hero-editorial-note"><span>01 / 03</span><i /><strong>DIAGNÓSTICO<br />EM CAMPO</strong><p>Entendemos o risco, priorizamos o que importa e devolvemos um plano técnico claro.</p></aside>
-        <div className="hero-editorial-bottom"><span>PLANTÃO EMERGENCIAL</span><span>PROJETOS • MANUTENÇÃO • PROTEÇÃO</span><span>ROLE PARA CONHECER</span></div>
       </section>
 
       <section className="trust-strip" aria-label="Diferenciais"><div><span>Segurança<br />operacional</span></div><div><span>Confiabilidade<br />técnica</span></div><div><span>Redução de<br />custos</span></div><div><span>Atendimento<br />especializado</span></div><div><span>Conformidade<br />técnica</span></div></section>

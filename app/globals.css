@@ -678,3 +678,57 @@ a, button, .warning-plate, .service-card, .photo-slot { -webkit-tap-highlight-co
   .menu-toggle { padding: 12px 8px; }
   .nav-links > a { padding: 10px 6px; }
 }
+
+/* ============================================================
+   HERO CINEMATICO (impeccable — direcao escolhida pelo Kaique)
+   foto tratada em brasa + caveira grande + arco eletrico animado.
+   Substitui o hero-editorial (classes antigas ficam sem elemento).
+   ============================================================ */
+.hero-cine { position: relative; display: block; width: 100%; height: 100vh; height: 100dvh; min-height: 600px; padding: 0; overflow: hidden; isolation: isolate; background: var(--night); }
+.hero-cine::before, .hero-cine::after { content: none !important; }
+.hero-cine .hc-photo { position: absolute; inset: 0; z-index: 0; background-image: var(--photo); background-size: cover; background-position: 60% 40%; filter: grayscale(1) contrast(1.25) brightness(.5); transform: scale(1.06); }
+.hero-cine .hc-duotone { position: absolute; inset: 0; z-index: 1; background: linear-gradient(115deg, var(--ember-lt) 0%, var(--ember) 30%, var(--ember-dp) 55%, var(--night-2) 100%); mix-blend-mode: multiply; }
+.hero-cine .hc-glow { position: absolute; inset: 0; z-index: 2; background: radial-gradient(60% 55% at 74% 42%, rgba(255,165,82,.42), transparent 60%); mix-blend-mode: screen; pointer-events: none; }
+.hero-cine .hc-scrim { position: absolute; inset: 0; z-index: 3; pointer-events: none; background:
+  linear-gradient(180deg, rgba(16,12,9,.72) 0%, transparent 16%),
+  linear-gradient(90deg, rgba(16,12,9,.94) 0%, rgba(16,12,9,.72) 42%, rgba(16,12,9,.08) 78%, transparent 100%),
+  linear-gradient(0deg, rgba(16,12,9,.96) 0%, rgba(16,12,9,.35) 34%, transparent 62%); }
+.hero-cine .hc-vignette { position: absolute; inset: 0; z-index: 4; pointer-events: none; background: radial-gradient(120% 120% at 50% 44%, transparent 52%, rgba(0,0,0,.72) 100%); }
+.hero-cine .hc-rail { position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 6; background: linear-gradient(90deg, transparent, var(--ember-dp) 12%, var(--ember) 50%, var(--ember-dp) 88%, transparent); opacity: .9; }
+.hero-cine .hc-skull { position: absolute; z-index: 5; top: 50%; right: clamp(-40px, 2vw, 80px); transform: translateY(-50%); width: clamp(320px, 44vw, 640px); aspect-ratio: 120 / 101; background-image: var(--skull); background-size: contain; background-repeat: no-repeat; background-position: center; opacity: .9; filter: drop-shadow(0 26px 60px rgba(0,0,0,.72)); pointer-events: none; }
+.hero-cine .hc-arc { position: absolute; z-index: 5; top: 50%; right: clamp(-40px, 2vw, 80px); transform: translateY(-50%); width: clamp(320px, 44vw, 640px); aspect-ratio: 120 / 101; pointer-events: none; overflow: visible; }
+.hero-cine .arc-bolt { fill: none; stroke: var(--ember-lt); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 6px var(--ember)) drop-shadow(0 0 14px rgba(239,138,52,.7)); stroke-dasharray: 220; stroke-dashoffset: 220; opacity: 0; animation: hcStrike 4.6s ease-in-out infinite; }
+.hero-cine .arc-bolt--b { animation-delay: 2.3s; stroke-width: 1.8; }
+@keyframes hcStrike { 0%,74% { stroke-dashoffset: 220; opacity: 0; } 76% { stroke-dashoffset: 0; opacity: 1; } 78% { opacity: .35; } 80% { opacity: 1; } 83% { opacity: .5; } 88% { stroke-dashoffset: 0; opacity: .9; } 100% { stroke-dashoffset: -220; opacity: 0; } }
+.hero-cine .hc-inner { position: relative; z-index: 7; height: 100%; max-width: 1440px; margin: 0 auto; padding: clamp(96px, 12vh, 150px) clamp(22px, 5vw, 80px) clamp(28px, 5vh, 54px); display: flex; flex-direction: column; }
+.hero-cine .hc-stage { margin-top: auto; max-width: min(680px, 92%); }
+.hero-cine .hc-kicker { display: inline-flex; align-items: center; gap: 12px; font-family: var(--font-label); font-weight: 600; font-size: clamp(.66rem, 1.6vw, .8rem); letter-spacing: .24em; text-transform: uppercase; color: var(--ember-lt); margin: 0 0 clamp(14px, 2.4vw, 22px); }
+.hero-cine .hc-kicker::before { content: ""; width: clamp(26px, 4vw, 52px); height: 2px; background: linear-gradient(90deg, var(--ember), transparent); flex: none; }
+.hero-cine .hc-title { margin: 0; font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: .9; letter-spacing: .005em; color: var(--bone); font-size: clamp(2.7rem, 8.6vw, 6.4rem); text-shadow: 0 6px 34px rgba(0,0,0,.55); text-wrap: balance; }
+.hero-cine .hc-lead { display: block; color: var(--ember); font-size: 1.14em; letter-spacing: 0; }
+.hero-cine .hc-sub { margin: clamp(18px, 2.8vw, 26px) 0 0; max-width: 44ch; font-size: clamp(1rem, 1.7vw, 1.22rem); line-height: 1.5; color: #cbb89a; font-weight: 400; }
+.hero-cine .hc-cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: clamp(24px, 3.4vw, 38px); }
+.hero-cine .hc-btn { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-label); font-weight: 600; font-size: .94rem; letter-spacing: .08em; text-transform: uppercase; padding: 15px 26px; border-radius: 999px; cursor: pointer; transition: transform .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease; }
+.hero-cine .hc-btn svg { width: 17px; height: 17px; flex: none; }
+.hero-cine .hc-btn--primary { background: var(--ember); color: #17100a; box-shadow: 0 12px 26px rgba(0,0,0,.5); }
+.hero-cine .hc-btn--primary:hover { background: var(--ember-lt); transform: translateY(-2px); }
+.hero-cine .hc-btn--ghost { background: rgba(231,210,166,.04); color: var(--bone); border: 1px solid rgba(231,210,166,.16); }
+.hero-cine .hc-btn--ghost:hover { border-color: var(--ember); color: var(--ember-lt); transform: translateY(-2px); }
+.hero-cine .hc-foot { margin-top: clamp(20px, 3vw, 32px); display: flex; align-items: center; gap: 14px; font-family: var(--font-label); font-weight: 500; font-size: .8rem; letter-spacing: .04em; color: #cbb89a; }
+.hero-cine .hc-foot span { height: 1px; flex: 1; max-width: 120px; background: rgba(231,210,166,.16); }
+@media (max-width: 760px) {
+  .hero-cine .hc-photo { background-position: 64% 40%; }
+  .hero-cine .hc-skull, .hero-cine .hc-arc { top: 32%; right: 50%; transform: translate(50%, -50%); width: clamp(300px, 86vw, 420px); opacity: .42; }
+  .hero-cine .hc-scrim { background:
+    linear-gradient(0deg, rgba(16,12,9,.97) 6%, rgba(16,12,9,.5) 40%, rgba(16,12,9,.15) 70%, transparent 100%),
+    linear-gradient(90deg, rgba(16,12,9,.55), rgba(16,12,9,.2)); }
+  .hero-cine .hc-stage { max-width: 100%; }
+  .hero-cine .hc-cta { flex-direction: column; align-items: stretch; }
+  .hero-cine .hc-btn { justify-content: center; }
+}
+@media (max-width: 390px) { .hero-cine .hc-title { font-size: clamp(2.4rem, 12vw, 3.1rem); } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-cine .arc-bolt { animation: none; stroke-dashoffset: 0; opacity: .85; }
+  .hero-cine .hc-btn { transition: none; }
+  .hero-cine .hc-btn:hover { transform: none; }
+}
