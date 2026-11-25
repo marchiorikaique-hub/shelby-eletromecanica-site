@@ -41,3 +41,7 @@ next-env.d.ts
 /outputs/
 /work/
 /tmp/
+
+.impeccable/review/
+.impeccable/questions/
+tsconfig.tsbuildinfo

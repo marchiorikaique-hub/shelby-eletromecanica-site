@@ -1,299 +1,294 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, PointerEvent as RPointerEvent, useEffect, useRef, useState } from "react";
 
 declare const __BASE_PATH__: string;
 
-const method = [
-  ["Entendemos o cenário", "Levantamento técnico, necessidade e grau de urgência."],
-  ["Diagnosticamos com precisão", "Inspeções, ensaios, medições e análise de risco."],
-  ["Executamos e documentamos", "Solução, comissionamento, ART e relatório técnico."],
+const WA = "5511989283393";
+const wa = (t: string) => `https://wa.me/${WA}?text=${encodeURIComponent(t)}`;
+const WA_OLA = wa("Olá, Shelby! Vim pelo site e quero falar com a equipe.");
+
+const reel = [
+  { f: "subestacao-externa", t: "Subestação", n: "Operação real" },
+  { f: "tecnico-cabine", t: "Cabine primária", n: "Manutenção" },
+  { f: "munck-noturno", t: "Rede aérea", n: "Plantão noturno" },
+  { f: "transformador-cabine", t: "Transformador", n: "Cabine" },
+  { f: "grupo-gerador", t: "Grupo gerador", n: "Revisão" },
 ];
 
-const services = [
-  { t: "Projetos de engenharia", tag: "ART • Média tensão", photo: "projeto-eletrico", copy: "Da viabilidade ao projeto executivo, com documentação para as concessionárias." },
-  { t: "Cabines e subestações", tag: "Implantação • Retrofit", photo: "cabines-prontas", copy: "Modernização, ampliação e proteção da sua distribuição de energia." },
-  { t: "Manutenção preventiva", tag: "Planos • Inspeções", photo: "tecnico-cabine", copy: "Rotinas técnicas que antecipam falhas e preservam a disponibilidade." },
-  { t: "Ensaios elétricos", tag: "Laudos • Instrumentação", photo: "ensaio-transformador", copy: "Medições e testes que comprovam a integridade dos equipamentos." },
-  { t: "Relés e proteção", tag: "Ajustes • Seletividade", photo: "painel-comando", copy: "Proteção coordenada para uma ocorrência não parar toda a operação." },
-  { t: "SPDA e aterramento", tag: "Proteção • ART", photo: "rede-aerea", copy: "Inspeção, adequação e laudos para proteção contra descargas." },
-  { t: "Termografia", tag: "Diagnóstico • Prevenção", photo: "transformador-tela", copy: "Enxergue aquecimentos anormais antes que eles causem uma parada." },
-  { t: "Grupo gerador", tag: "Instalação • Manutenção", photo: "grupo-gerador", copy: "Energia de emergência revisada para funcionar na hora exata." },
-  { t: "Eficiência energética", tag: "Medição • Otimização", photo: "disjuntor-mt", copy: "Análise técnica para transformar consumo em decisão operacional." },
+const servicos = [
+  { t: "Cabines e subestações", d: "Implantação, retrofit, ampliação e proteção da sua entrada de energia.", f: "cabines-prontas" },
+  { t: "Manutenção preventiva e corretiva", d: "Rotina que antecipa falha e atendimento quando a falha já aconteceu.", f: "tecnico-cabine" },
+  { t: "Ensaios, termografia e laudos", d: "Medição, teste e imagem térmica que comprovam o estado de cada equipamento.", f: "ensaio-transformador" },
+  { t: "Relés, proteção e SPDA", d: "Seletividade ajustada e aterramento em dia, pra uma ocorrência não parar tudo.", f: "painel-comando" },
+  { t: "Grupo gerador", d: "Instalação e revisão da energia de emergência, pronta na hora exata.", f: "grupo-gerador" },
+  { t: "Projetos com ART", d: "Da viabilidade ao executivo, com a documentação que a concessionária pede.", f: "projeto-eletrico" },
 ];
 
-const gallery = [
-  { photo: "subestacao-externa", tag: "SUBESTAÇÃO", note: "Operação real" },
-  { photo: "transformador-cabine", tag: "TRANSFORMADOR", note: "Cabine primária" },
-  { photo: "cabo-media-tensao", tag: "MÉDIA TENSÃO", note: "Cabeamento" },
-  { photo: "equipe-painel", tag: "EQUIPE", note: "Em campo" },
-  { photo: "munck-noturno", tag: "REDE AÉREA", note: "Plantão noturno" },
-  { photo: "dreno-oleo", tag: "GERADOR", note: "Manutenção" },
-  { photo: "ensaio-painel", tag: "ENSAIO", note: "Instrumentação" },
-  { photo: "ramal-entrada", tag: "RAMAL DE ENTRADA", note: "Ligação nova" },
-  { photo: "gerador-manutencao", tag: "MOTOR", note: "Troca de filtros" },
+const obras = [
+  { f: "subestacao-externa", t: "Subestação", n: "Operação real" },
+  { f: "transformador-cabine", t: "Transformador", n: "Cabine primária" },
+  { f: "cabo-media-tensao", t: "Média tensão", n: "Cabeamento" },
+  { f: "munck-noturno", t: "Rede aérea", n: "Plantão noturno" },
+  { f: "equipe-painel", t: "Equipe", n: "Painel elétrico" },
+  { f: "ensaio-painel", t: "Ensaio", n: "Instrumentação" },
+  { f: "ramal-entrada", t: "Ramal de entrada", n: "Ligação nova" },
+  { f: "gerador-manutencao", t: "Gerador", n: "Troca de filtros" },
+  { f: "rede-aerea", t: "Rede aérea", n: "Poste" },
+  { f: "disjuntor-mt", t: "Disjuntor de MT", n: "Manutenção" },
 ];
 
-type Brief = { service: string; urgency: string; installation: string; city: string; name: string; company: string; phone: string; detail: string };
-const initialBrief: Brief = { service: "", urgency: "", installation: "", city: "", name: "", company: "", phone: "", detail: "" };
+const letreiro = ["Cabines primárias", "Subestações", "Média tensão", "Plantão 24h", "Ensaios e laudos", "Grupo gerador"];
 
-const GN = 5;
-const flipAt = (g: boolean[]) => (out: boolean[], r: number, c: number) => { if (r >= 0 && r < GN && c >= 0 && c < GN) out[r * GN + c] = !out[r * GN + c]; };
-function toggleCell(g: boolean[], i: number) {
-  const out = [...g]; const r = Math.floor(i / GN), c = i % GN; const f = flipAt(g);
-  f(out, r, c); f(out, r - 1, c); f(out, r + 1, c); f(out, r, c - 1); f(out, r, c + 1); return out;
-}
-function seedPanel() {
-  let g = Array(GN * GN).fill(false);
-  for (let k = 0; k < 8; k++) g = toggleCell(g, Math.floor(Math.random() * GN * GN));
-  if (g.every((c) => !c)) g = toggleCell(g, Math.floor(Math.random() * GN * GN));
-  return g;
-}
-
-function PanelGame() {
-  const [grid, setGrid] = useState<boolean[]>(seedPanel);
-  const [moves, setMoves] = useState(0);
-  const [started, setStarted] = useState(false);
-  const won = grid.every((c) => !c);
-  const click = (i: number) => { if (won) return; if (!started) setStarted(true); setGrid((g) => toggleCell(g, i)); setMoves((m) => m + 1); };
-  const reset = () => { setGrid(seedPanel()); setMoves(0); setStarted(false); };
-  const active = grid.filter(Boolean).length;
+function Zap() {
   return (
-    <div className="panel-game">
-      <div className="pg-head">
-        <div className="pg-status" data-won={won}>{won ? "Quadro estabilizado" : active > 0 ? `${active} disjuntores em alarme` : "Pronto"}</div>
-        <div className="pg-meta"><span>Jogadas <b>{moves}</b></span><button type="button" onClick={reset}>Reiniciar</button></div>
-      </div>
-      <div className="pg-grid" role="group" aria-label="Painel de disjuntores">
-        {grid.map((on, i) => (
-          <button key={i} type="button" className={`pg-cell ${on ? "on" : ""}`} aria-pressed={on} aria-label={`Disjuntor ${i + 1} ${on ? "em alarme" : "desarmado"}`} onClick={() => click(i)}>
-            <i /><b>{on ? "ON" : "OFF"}</b>
-          </button>
-        ))}
-        {won && (
-          <div className="pg-win">
-            <strong>Zerou os alarmes</strong>
-            <p>{moves} jogadas. Na vida real, é a Shelby que desarma o risco antes dele virar parada.</p>
-            <a className="pg-win-cta" href="#diagnostico">Chamar a Shelby</a>
-          </div>
-        )}
-      </div>
-    </div>
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="ico">
+      <path d="M12 2.2a9.7 9.7 0 0 0-8.4 14.6L2.3 21.8l5.1-1.3A9.7 9.7 0 1 0 12 2.2Zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 19.9Zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c0-.1-.2-.2-.5-.3Z" fill="currentColor" />
+    </svg>
   );
+}
+function Seta() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true" className="ico seta"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+function Raio() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true" className="raio"><path d="M13.5 2 4.5 13.5h6L9.5 22l10-12.5h-6.2L13.5 2Z" fill="currentColor" /></svg>;
 }
 
 export default function ShelbyExperience() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const mainRef = useRef<HTMLElement>(null);
-  const [step, setStep] = useState(1);
-  const [brief, setBrief] = useState<Brief>(initialBrief);
-  const [sent, setSent] = useState(false);
-  const assetPrefix = __BASE_PATH__;
-  const asset = (path: string) => `${assetPrefix}${path}`;
-  const photo = (name: string) => asset(`/assets/site/${name}.jpg`);
+  const a = (p: string) => `${__BASE_PATH__}${p}`;
+  const foto = (n: string) => a(`/assets/v2/${n}.webp`);
+  const [menu, setMenu] = useState(false);
+  const [ativa, setAtiva] = useState(0);
+  const poeira = useRef<HTMLCanvasElement>(null);
+  const palco = useRef<HTMLElement>(null);
+  const vitrine = useRef<HTMLDivElement>(null);
 
+  // poeira de luz subindo no palco
   useEffect(() => {
-    let ticking = false;
-    const apply = () => {
-      const el = mainRef.current;
-      if (el) {
-        const max = document.documentElement.scrollHeight - innerHeight;
-        el.style.setProperty("--sp", String(max ? scrollY / max : 0));
-      }
-      ticking = false;
+    const cv = poeira.current;
+    if (!cv || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ctx = cv.getContext("2d");
+    if (!ctx) return;
+    const CORES = ["255,225,26", "155,92,255", "91,18,201", "241,238,248"];
+    let w = 0, h = 0, raf = 0, vis = true, mx = 0, tx = 0;
+    let pts: { x: number; y: number; r: number; v: number; a: number; z: number; c: string }[] = [];
+    const medir = () => {
+      const r = cv.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
+      w = r.width; h = r.height; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pts = Array.from({ length: Math.round((w * h) / 9000) }, () => ({
+        x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.8 + 0.3, v: Math.random() * 0.4 + 0.08,
+        a: Math.random() * 0.6 + 0.15, z: Math.random() * 0.9 + 0.1, c: CORES[Math.floor(Math.random() * CORES.length)],
+      }));
     };
-    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(apply); } };
-    const reveal = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")),
-      { threshold: 0.14 }
-    );
-    document.querySelectorAll(".reveal").forEach((el) => reveal.observe(el));
-    const hero = document.querySelector(".hero");
-    const heroIdle = new IntersectionObserver(([e]) => hero?.classList.toggle("is-idle", !e.isIntersecting), { threshold: 0 });
-    if (hero) heroIdle.observe(hero);
-    apply(); addEventListener("scroll", onScroll, { passive: true });
-    return () => { removeEventListener("scroll", onScroll); reveal.disconnect(); heroIdle.disconnect(); };
+    const quadro = () => {
+      raf = 0;
+      if (!vis) return;
+      tx += (mx - tx) * 0.05;
+      ctx.clearRect(0, 0, w, h);
+      for (const p of pts) {
+        p.y -= p.v;
+        if (p.y < -4) { p.y = h + 4; p.x = Math.random() * w; }
+        ctx.fillStyle = `rgba(${p.c},${p.a})`;
+        ctx.beginPath(); ctx.arc(p.x + tx * p.z * 40, p.y, p.r, 0, 6.2832); ctx.fill();
+      }
+      raf = requestAnimationFrame(quadro);
+    };
+    const mover = (e: PointerEvent) => { mx = e.clientX / innerWidth - 0.5; };
+    const io = new IntersectionObserver(([e]) => { vis = e.isIntersecting; if (vis && !raf) raf = requestAnimationFrame(quadro); });
+    medir(); io.observe(cv);
+    addEventListener("resize", medir, { passive: true });
+    addEventListener("pointermove", mover, { passive: true });
+    raf = requestAnimationFrame(quadro);
+    return () => { cancelAnimationFrame(raf); io.disconnect(); removeEventListener("resize", medir); removeEventListener("pointermove", mover); };
   }, []);
 
-  const selectedService = useMemo(() => services.find((item) => item.t === brief.service)?.t || "", [brief.service]);
-  const update = (key: keyof Brief, value: string) => setBrief((prev) => ({ ...prev, [key]: value }));
-  const previous = () => setStep((current) => Math.max(current - 1, 1));
-  const chooseService = (service: string) => { update("service", service); setStep(2); };
-  const advanceFromLocation = () => { if (brief.urgency && brief.installation && brief.city.trim().length > 2) setStep(3); };
-  const advanceFromContact = () => { if (brief.name.trim() && brief.phone.trim().length > 7) setStep(4); };
-  const submitBrief = (event: FormEvent) => {
-    event.preventDefault();
-    if (step < 4) return;
-    const e = encodeURIComponent;
-    const text = `Olá, Shelby! Quero solicitar um orçamento.%0A%0A*Serviço:* ${e(brief.service)}%0A*Urgência:* ${e(brief.urgency)}%0A*Instalação:* ${e(brief.installation)}%0A*Cidade:* ${e(brief.city)}%0A*Nome:* ${e(brief.name)}%0A*Empresa:* ${e(brief.company || "Não informado")}%0A*Telefone:* ${e(brief.phone)}%0A*Detalhes:* ${e(brief.detail || "Não informado")}`;
-    window.open(`https://wa.me/5511989283393?text=${text}`, "_blank", "noopener,noreferrer");
-    setSent(true);
+  // fotos girando no palco
+  useEffect(() => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => setAtiva((i) => (i + 1) % reel.length), 3600);
+    return () => clearInterval(id);
+  }, []);
+
+  // parallax do palco e revelação das seções
+  useEffect(() => {
+    const calmo = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const el = palco.current;
+    let raf = 0;
+    const rolar = () => {
+      raf = 0;
+      if (!el) return;
+      const p = Math.min(1, Math.max(0, scrollY / (el.offsetHeight || 1)));
+      el.style.setProperty("--p", p.toFixed(3));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(rolar); };
+    if (!calmo) { addEventListener("scroll", onScroll, { passive: true }); rolar(); }
+    if (!calmo) document.documentElement.classList.add("anima");
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("dentro")), { threshold: 0.18 });
+    document.querySelectorAll(".surge").forEach((n) => io.observe(n));
+    return () => { removeEventListener("scroll", onScroll); io.disconnect(); };
+  }, []);
+
+  // vitrine arrastável com inércia
+  const drag = useRef({ on: false, x: 0, s: 0, v: 0, t: 0, moved: false });
+  const down = (e: RPointerEvent<HTMLDivElement>) => {
+    const v = vitrine.current; if (!v || e.pointerType !== "mouse") return;
+    drag.current = { on: true, x: e.clientX, s: v.scrollLeft, v: 0, t: performance.now(), moved: false };
+    v.setPointerCapture(e.pointerId); v.classList.add("arrastando");
   };
+  const move = (e: RPointerEvent<HTMLDivElement>) => {
+    const v = vitrine.current, d = drag.current; if (!v || !d.on) return;
+    const dx = e.clientX - d.x; if (Math.abs(dx) > 4) d.moved = true;
+    const now = performance.now(); const prev = v.scrollLeft;
+    v.scrollLeft = d.s - dx; d.v = (v.scrollLeft - prev) / Math.max(1, now - d.t); d.t = now;
+  };
+  const up = () => {
+    const v = vitrine.current, d = drag.current; if (!v || !d.on) return;
+    d.on = false; v.classList.remove("arrastando");
+    let vel = d.v * 16;
+    const deslizar = () => { if (Math.abs(vel) < 0.4) return; v.scrollLeft += vel; vel *= 0.93; requestAnimationFrame(deslizar); };
+    requestAnimationFrame(deslizar);
+  };
+  const passo = (dir: number) => vitrine.current?.scrollBy({ left: dir * Math.min(560, innerWidth * 0.8), behavior: "smooth" });
 
   return (
-    <main ref={mainRef}>
-      <div className="scroll-line" />
+    <main>
+      <header className="nav">
+        <nav className="nav-inner" aria-label="Principal">
+          <a className="marca" href="#inicio" aria-label="Shelby Eletromecânica, início">
+            <img src={foto("caveira-mini")} alt="" width={48} height={41} />
+            <span>Shelby<small>Eletromecânica</small></span>
+          </a>
+          <div id="menu" className={`nav-links ${menu ? "aberto" : ""}`}>
+            <a href="#servicos" onClick={() => setMenu(false)}>Serviços</a>
+            <a href="#obras" onClick={() => setMenu(false)}>Obras</a>
+            <a href="#quem" onClick={() => setMenu(false)}>Quem faz</a>
+          </div>
+          <a className="btn btn-raio btn-nav" href={WA_OLA} target="_blank" rel="noopener noreferrer"><Zap />WhatsApp</a>
+          <button className="nav-burger" aria-label={menu ? "Fechar menu" : "Abrir menu"} aria-expanded={menu} aria-controls="menu" onClick={() => setMenu(!menu)}><span /><span /></button>
+        </nav>
+      </header>
 
-      <nav className="nav">
-        <a className="brand" href="#inicio" aria-label="Shelby Eletromecânica"><img src={asset("/assets/shelby-logo.png")} alt="" /><span>SHELBY<small>ELETROMECÂNICA</small></span></a>
-        <button className="menu-toggle" aria-label="Abrir menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><i /><i /></button>
-        <div className={`nav-links ${menuOpen ? "open" : ""}`}>
-          <a href="#empresa" onClick={() => setMenuOpen(false)}>A empresa</a>
-          <a href="#servicos" onClick={() => setMenuOpen(false)}>Soluções</a>
-          <a href="#obras" onClick={() => setMenuOpen(false)}>Obras</a>
-          <a href="#metodo" onClick={() => setMenuOpen(false)}>Método</a>
-          <a className="nav-cta" href="#diagnostico" onClick={() => setMenuOpen(false)}>Orçamento</a>
+      <section className="palco" id="inicio" ref={palco} aria-label="Shelby Eletromecânica">
+        <canvas className="poeira" ref={poeira} aria-hidden="true" />
+        <div className="palco-pilares" aria-hidden="true">{Array.from({ length: 7 }, (_, i) => <i key={i} style={{ "--i": i } as CSSProperties} />)}</div>
+        <div className="letras" aria-hidden="true">
+          <div className="letras-trilho">{[...letreiro, ...letreiro].map((t, i) => <span key={i}>{t}<Raio /></span>)}</div>
         </div>
-      </nav>
 
-      <section className="hero" id="inicio" aria-label="Shelby Eletromecânica" style={{ "--hero": `url(${photo("grupo-gerador")})` } as React.CSSProperties}>
-        <div className="hero-photo" aria-hidden="true" />
-        <div className="hero-grid" aria-hidden="true" />
-        <div className="hero-scrim" aria-hidden="true" />
-        <div className="hero-top"><span>Caieiras · São Paulo</span><span className="live"><i />Plantão ativo</span></div>
-        <div className="hero-inner">
-          <img className="hero-logo" src={asset("/assets/shelby-logo.png")} alt="Shelby Eletromecânica" />
-          <p className="hero-kicker">Engenharia elétrica · Média e baixa tensão</p>
-          <h1>Energia sob <br /><em>controle técnico.</em></h1>
-          <p className="hero-sub">Projetos, manutenção e proteção elétrica para operações que não podem parar. Do laudo à execução, com documentação de verdade.</p>
-          <div className="hero-cta">
-            <a className="btn btn-primary" href="#diagnostico">Solicitar avaliação</a>
-            <a className="btn btn-ghost" href="#servicos">Ver soluções</a>
+        <div className="palco-grade">
+          <div className="palco-texto">
+            <h1>Energia que não para. <em>Nem a gente.</em></h1>
+            <p className="palco-sub">Cabines primárias, subestações e quadros de média e baixa tensão. Do diagnóstico ao laudo, com a Shelby em campo.</p>
+            <div className="palco-cta">
+              <a className="btn btn-raio" href={WA_OLA} target="_blank" rel="noopener noreferrer"><Zap />Chamar no WhatsApp</a>
+              <a className="btn btn-vidro" href="#servicos">Ver serviços<Seta /></a>
+            </div>
+            <p className="status"><i />Plantão 24h · Caieiras e Grande SP</p>
+          </div>
+
+          <div className="palco-centro" aria-hidden="true">
+            <div className="pedestal"><b /><b /><b /></div>
+            <span className="anel-varre" />
+            <img className="palco-caveira" src={foto("caveira")} alt="" width={760} height={642} fetchPriority="high" />
+          </div>
+
+          <div className="reel" aria-label="Obras recentes">
+            {reel.map((r, i) => {
+              const rel = (i - ativa + reel.length) % reel.length;
+              return (
+                <figure key={r.f} className={`reel-foto pos-${Math.min(rel, 3)} ${rel === 0 ? "ativa" : ""}`} aria-hidden={rel !== 0}>
+                  <img src={foto(r.f)} alt={rel === 0 ? `${r.t}, ${r.n.toLowerCase()}` : ""} loading={i < 2 ? "eager" : "lazy"} />
+                  <figcaption><b>{r.t}</b><span>{r.n}</span></figcaption>
+                </figure>
+              );
+            })}
           </div>
         </div>
-        <div className="hero-foot"><span>Subestações</span><span>Proteção</span><span>Ensaios e laudos</span><span>Atendimento 24h</span></div>
+        <div className="palco-chao" aria-hidden="true" />
       </section>
 
-      <section className="strip" aria-label="Diferenciais">
-        <div><b>+10</b><span>anos em campo</span></div>
-        <div><b>MT/BT</b><span>média e baixa tensão</span></div>
-        <div><b>ART</b><span>responsabilidade técnica</span></div>
-        <div><b>24h</b><span>plantão emergencial</span></div>
-      </section>
-
-      <section className="intro section" id="empresa">
-        <div className="intro-media reveal"><img src={photo("cabo-media-tensao")} alt="Técnico da Shelby preparando cabo de média tensão" loading="lazy" /><span className="tape">Operação real</span></div>
-        <div className="intro-copy reveal">
-          <div className="eyebrow">A empresa</div>
-          <h2>Postura técnica para manter a sua operação <em>de pé.</em></h2>
-          <p>A Shelby é especializada em engenharia elétrica, manutenção eletromecânica e soluções para sistemas de média e baixa tensão.</p>
-          <p>Atuamos em campo, com método, agilidade e documentação, para dar segurança a quem decide e continuidade a quem opera.</p>
-          <div className="principles"><span>Prontos para emergências</span><span>Do projeto à manutenção</span><span>Compromisso com a segurança</span></div>
+      <section className="faixa" aria-label="Diferenciais">
+        <div className="faixa-trilho">
+          {[0, 1].map((k) => (
+            <p key={k} aria-hidden={k === 1}>
+              <span>Mais de 10 anos em campo</span><Raio /><span>Média e baixa tensão</span><Raio /><span>ART e relatório técnico</span><Raio /><span>Plantão 24 horas</span><Raio /><span>Fotos reais de obra</span><Raio />
+            </p>
+          ))}
         </div>
       </section>
 
-      <section className="band"><p>INDÚSTRIAS <b>/</b> CONDOMÍNIOS <b>/</b> COMÉRCIOS <b>/</b> GALPÕES LOGÍSTICOS <b>/</b> INFRAESTRUTURA CRÍTICA <b>/</b> SUBESTAÇÕES</p></section>
-
-      <section className="services section" id="servicos">
-        <div className="section-head reveal">
-          <div className="eyebrow">Soluções técnicas</div>
-          <h2>Engenharia que antecipa. <em>Manutenção que protege.</em></h2>
-          <p>Do projeto ao laudo, cobrimos o ciclo elétrico completo da sua operação.</p>
-        </div>
-        <div className="svc-grid">
-          {services.map((s, i) => (
-            <a className="svc reveal" href="#diagnostico" key={s.t} onClick={() => chooseService(s.t)}>
-              <div className="svc-photo"><img src={photo(s.photo)} alt={s.t} loading="lazy" /><span className="svc-n">{String(i + 1).padStart(2, "0")}</span></div>
-              <div className="svc-body"><span className="svc-tag">{s.tag}</span><h3>{s.t}</h3><p>{s.copy}</p><b className="svc-go">Solicitar avaliação</b></div>
+      <section className="servicos" id="servicos">
+        <h2 className="surge">O que a Shelby faz</h2>
+        <div className="bandas">
+          {servicos.map((s, i) => (
+            <a key={s.t} className={`banda surge tom-${i % 3}`} href={wa(`Olá, Shelby! Vim pelo site e preciso de: ${s.t}.`)} target="_blank" rel="noopener noreferrer">
+              <div className="banda-texto">
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+                <span className="quero">Quero isso<Seta /></span>
+              </div>
+              <div className="banda-tela"><img src={foto(s.f)} alt="" loading="lazy" /></div>
             </a>
           ))}
         </div>
       </section>
 
-      <section className="gallery section" id="obras">
-        <div className="section-head reveal">
-          <div className="eyebrow">Obras em campo</div>
-          <h2>Na prática, <em>com a Shelby.</em></h2>
-          <p>Registros reais de projetos, manutenção e ensaios feitos pela equipe.</p>
+      <section className="obras" id="obras">
+        <div className="obras-topo surge">
+          <div>
+            <h2>No campo, de verdade.</h2>
+            <p>Registros das obras da equipe. Arraste pro lado.</p>
+          </div>
+          <div className="setas">
+            <button type="button" aria-label="Fotos anteriores" onClick={() => passo(-1)}><Seta /></button>
+            <button type="button" aria-label="Próximas fotos" onClick={() => passo(1)}><Seta /></button>
+          </div>
         </div>
-        <div className="wall reveal">
-          {gallery.map((g) => (
-            <figure className="shot" key={g.photo}>
-              <img src={photo(g.photo)} alt={g.tag} loading="lazy" />
-              <figcaption><span>{g.tag}</span><i>{g.note}</i></figcaption>
+        <div className="vitrine" ref={vitrine} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} tabIndex={0} aria-label="Fotos das obras">
+          {obras.map((o) => (
+            <figure className="peca" key={o.f}>
+              <img src={foto(o.f)} alt={`${o.t}, ${o.n.toLowerCase()}`} loading="lazy" draggable={false} />
+              <figcaption><b>{o.t}</b><span>{o.n}</span></figcaption>
             </figure>
           ))}
         </div>
       </section>
 
-      <section className="method section" id="metodo">
-        <div className="method-head reveal">
-          <div className="eyebrow">Método Shelby</div>
-          <h2>Menos parada. <em>Mais previsibilidade.</em></h2>
-          <p>Não é só executar. É entender a criticidade, priorizar o risco real e devolver uma solução documentada.</p>
-        </div>
-        <div className="steps">
-          {method.map(([title, copy], i) => (
-            <article className="step reveal" key={title}><b>{String(i + 1).padStart(2, "0")}</b><h3>{title}</h3><p>{copy}</p></article>
-          ))}
-        </div>
-      </section>
-
-      <section className="evidence section">
-        <div className="ev ev-photo reveal" style={{ "--ev": `url(${photo("transformador-tela")})` } as React.CSSProperties}>
-          <span>Termografia</span><strong>Calor sob controle</strong><p>Mapeamento de aquecimentos anormais para agir antes da falha crítica.</p>
-        </div>
-        <div className="ev ev-quote reveal">
-          <span>Proteção</span><h3>Uma ocorrência não precisa parar <em>toda a operação.</em></h3><p>Ajuste de relés e seletividade para isolar o problema e preservar o resto do sistema.</p>
-        </div>
-        <div className="ev ev-list reveal">
-          <span>Documentação</span><ul><li>ART emitida</li><li>Laudo técnico</li><li>Relatório fotográfico</li><li>Plano de ação</li></ul>
+      <section className="quem" id="quem">
+        <figure className="quem-foto surge">
+          <img src={foto("cabo-media-tensao")} alt="Técnico da Shelby preparando cabo de média tensão" loading="lazy" />
+        </figure>
+        <div className="quem-texto surge">
+          <h2>Você fala direto com quem faz.</h2>
+          <p>A Shelby é do Josuel Souza, técnico em elétrica que está na obra. Sem central de atendimento, sem repasse.</p>
+          <ul>
+            <li><Raio />Emergência atendida a qualquer hora, dia ou noite.</li>
+            <li><Raio />Execução documentada: ART, laudo e relatório fotográfico.</li>
+            <li><Raio />Base em Caieiras, atendendo a Grande São Paulo.</li>
+          </ul>
+          <a className="btn btn-roxo" href={WA_OLA} target="_blank" rel="noopener noreferrer"><Zap />Falar com o Josuel</a>
         </div>
       </section>
 
-      <section className="game section" id="jogo">
-        <div className="game-copy reveal">
-          <div className="eyebrow">Desafio elétrico</div>
-          <h2>Quadro em alarme. <em>Desarme tudo.</em></h2>
-          <p>Cada toque desarma um disjuntor e os vizinhos na cruz. Zere todos os alarmes do painel.</p>
-          <p className="game-hint">Dica: pense na sequência, não no clique isolado. É assim que a gente trata risco de verdade.</p>
+      <section className="final" aria-label="Contato">
+        <h2 className="surge">Seu sistema não pode parar. <em>Nós também não.</em></h2>
+        <div className="final-cta surge">
+          <a className="btn btn-raio btn-grande" href={wa("Olá, Shelby! Preciso de atendimento.")} target="_blank" rel="noopener noreferrer"><Zap />Chamar no WhatsApp</a>
+          <a className="fone" href="tel:+5511989283393">(11) 98928-3393</a>
         </div>
-        <div className="game-stage reveal"><PanelGame /></div>
+        <blockquote className="versiculo">&ldquo;Consagre ao Senhor tudo o que você faz, e os seus planos serão bem-sucedidos.&rdquo;<cite>Provérbios 16:3</cite></blockquote>
+        <footer className="rodape">
+          <div className="rodape-linha">
+            <span>Av. Aparecida, 465 · Caieiras, SP</span>
+            <a href="mailto:josuel@shelbyeletromecanica.com">josuel@shelbyeletromecanica.com</a>
+            <a href={WA_OLA} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          </div>
+          <p className="gigante" aria-hidden="true">SHELBY</p>
+        </footer>
       </section>
 
-      <section className="safety section" id="seguranca">
-        <div className="safety-media reveal"><img src={photo("equipe-painel")} alt="Equipe da Shelby trabalhando em painel elétrico" loading="lazy" /><span className="tape">Segurança em primeiro lugar</span></div>
-        <div className="safety-copy reveal">
-          <div className="eyebrow">Segurança</div>
-          <h2>Risco controlado. <em>Operação protegida.</em></h2>
-          <p>Cada serviço segue procedimentos rigorosos, documentação técnica e as normas aplicáveis ao seu cenário.</p>
-          <div className="standard"><span>Procedimento técnico</span><span>Proteção operacional</span><span>Documentação rastreável</span></div>
-          <ul className="checks"><li>Equipe especializada e qualificada</li><li>Emissão de ART e relatórios técnicos</li><li>Soluções sob medida para a sua planta</li></ul>
-        </div>
-      </section>
-
-      <section className="diagnostic section" id="diagnostico">
-        <div className="diag-head reveal">
-          <div className="eyebrow">Atendimento direcionado</div>
-          <h2>Conte o cenário. <em>A gente acelera o caminho.</em></h2>
-          <p>Escolha o que precisa e a solicitação já chega com o contexto certo para a equipe.</p>
-        </div>
-        <form className="quote-form reveal" onSubmit={submitBrief}>
-          <div className="quote-progress"><span>Qualificação de atendimento</span><b>{["Cenário", "Operação", "Contato", "Revisão"][step - 1]}</b><div><i style={{ transform: `scaleX(${step / 4})` }} /></div></div>
-          {step === 1 && <fieldset><legend>Qual serviço você precisa?</legend><div className="option-grid">{services.map((s) => <button type="button" className={brief.service === s.t ? "selected" : ""} onClick={() => chooseService(s.t)} key={s.t}>{s.t}</button>)}</div><p className="form-guidance">Escolha uma solução para seguir.</p></fieldset>}
-          {step === 2 && <fieldset><legend>Qual é a prioridade e o local?</legend><div className="form-split"><label>Urgência<select value={brief.urgency} onChange={(e) => update("urgency", e.target.value)} required><option value="">Selecione</option><option>Emergência agora</option><option>Esta semana</option><option>Planejado / orçamento</option></select></label><label>Tipo de instalação<select value={brief.installation} onChange={(e) => update("installation", e.target.value)} required><option value="">Selecione</option><option>Indústria</option><option>Condomínio</option><option>Comércio</option><option>Subestação / cabine primária</option><option>Outro</option></select></label></div><label>Cidade da operação<input value={brief.city} onChange={(e) => update("city", e.target.value)} onBlur={advanceFromLocation} placeholder="Ex.: Caieiras, SP" required /></label><div className="form-nav"><button type="button" onClick={previous}>Voltar</button><span>Ao preencher a cidade, você avança.</span></div></fieldset>}
-          {step === 3 && <fieldset><legend>Com quem vamos falar?</legend><div className="form-split"><label>Seu nome<input value={brief.name} onChange={(e) => update("name", e.target.value)} placeholder="Nome e sobrenome" required /></label><label>Telefone / WhatsApp<input value={brief.phone} onChange={(e) => update("phone", e.target.value)} onBlur={advanceFromContact} placeholder="(11) 00000-0000" required /></label></div><label>Empresa<input value={brief.company} onChange={(e) => update("company", e.target.value)} placeholder="Nome da empresa (opcional)" /></label><label>O que está acontecendo?<textarea value={brief.detail} onChange={(e) => update("detail", e.target.value)} placeholder="Descreva o cenário, equipamento ou necessidade." /></label><div className="form-nav"><button type="button" onClick={previous}>Voltar</button><span>Ao informar o telefone, você avança.</span></div></fieldset>}
-          {step === 4 && <fieldset className="brief-review"><legend>Seu atendimento está pronto para ser direcionado.</legend><div><span>Serviço</span><b>{selectedService}</b></div><div><span>Urgência</span><b>{brief.urgency}</b></div><div><span>Operação</span><b>{brief.installation} · {brief.city}</b></div><div><span>Contato</span><b>{brief.name} · {brief.phone}</b></div><div className="form-nav"><button type="button" onClick={previous}>Ajustar</button><button className="form-next" type="submit">Enviar no WhatsApp</button></div>{sent && <p className="sent-confirmation">O WhatsApp foi aberto com todas as informações do atendimento.</p>}</fieldset>}
-        </form>
-      </section>
-
-      <section className="emergency" style={{ "--emg": `url(${photo("subestacao-externa")})` } as React.CSSProperties}>
-        <div className="eyebrow">Atendimento emergencial</div>
-        <h2>Seu sistema não pode parar. <em>Nós também não.</em></h2>
-        <p>Fale direto com a nossa equipe técnica.</p>
-        <a href="tel:+5511989283393" className="emergency-phone"><small>11</small> 98928-3393</a>
-      </section>
-
-      <section className="scripture"><p>&ldquo;Consagre ao Senhor tudo o que você faz, e os seus planos serão bem-sucedidos.&rdquo;</p><span>Provérbios 16:3</span></section>
-
-      <footer id="contato">
-        <div className="footer-main">
-          <div className="footer-brand"><img src={asset("/assets/shelby-logo.png")} alt="Shelby Eletromecânica" /><p>Energia com segurança, confiabilidade e excelência técnica.</p></div>
-          <div className="footer-col"><span>Fale com a Shelby</span><a href="#diagnostico">Solicitar avaliação</a><a href="https://wa.me/5511989283393" target="_blank" rel="noopener noreferrer">WhatsApp (11) 98928-3393</a><a href="mailto:josuel@shelbyeletromecanica.com">josuel@shelbyeletromecanica.com</a></div>
-          <div className="footer-col"><span>Base operacional</span><p>Av. Aparecida, 465<br />Caieiras, SP</p><a href="#inicio">Voltar ao topo</a></div>
-        </div>
-        <div className="footer-bottom"><span>Shelby Eletromecânica</span><span>Engenharia elétrica · Eletromecânica · Média tensão</span></div>
-      </footer>
+      <a className="dock" href={WA_OLA} target="_blank" rel="noopener noreferrer"><Zap />Chamar no WhatsApp</a>
     </main>
   );
 }
