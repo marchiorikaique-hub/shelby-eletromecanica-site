@@ -10,10 +10,8 @@ const WA_OLA = wa("Olá, Shelby! Vim pelo site e quero falar com a equipe.");
 
 const reel = [
   { f: "subestacao-externa", t: "Subestação", n: "Operação real" },
-  { f: "tecnico-cabine", t: "Cabine primária", n: "Manutenção" },
   { f: "munck-noturno", t: "Rede aérea", n: "Plantão noturno" },
-  { f: "transformador-cabine", t: "Transformador", n: "Cabine" },
-  { f: "grupo-gerador", t: "Grupo gerador", n: "Revisão" },
+  { f: "transformador-cabine", t: "Transformador", n: "Cabine primária" },
 ];
 
 const servicos = [
@@ -21,23 +19,18 @@ const servicos = [
   { t: "Manutenção preventiva e corretiva", d: "Rotina que antecipa falha e atendimento quando a falha já aconteceu.", f: "tecnico-cabine" },
   { t: "Ensaios, termografia e laudos", d: "Medição, teste e imagem térmica que comprovam o estado de cada equipamento.", f: "ensaio-transformador" },
   { t: "Relés, proteção e SPDA", d: "Seletividade ajustada e aterramento em dia, pra uma ocorrência não parar tudo.", f: "painel-comando" },
-  { t: "Grupo gerador", d: "Instalação e revisão da energia de emergência, pronta na hora exata.", f: "grupo-gerador" },
-  { t: "Projetos com ART", d: "Da viabilidade ao executivo, com a documentação que a concessionária pede.", f: "projeto-eletrico" },
+  { t: "Grupo gerador", d: "Instalação e revisão da energia de emergência, pronta na hora exata.", f: "gerador-manutencao" },
+  { t: "Projetos com ART", d: "Da viabilidade ao executivo, com a documentação que a concessionária pede.", f: "ramal-entrada" },
 ];
 
 const obras = [
-  { f: "subestacao-externa", t: "Subestação", n: "Operação real" },
-  { f: "transformador-cabine", t: "Transformador", n: "Cabine primária" },
-  { f: "cabo-media-tensao", t: "Média tensão", n: "Cabeamento" },
-  { f: "munck-noturno", t: "Rede aérea", n: "Plantão noturno" },
   { f: "equipe-painel", t: "Equipe", n: "Painel elétrico" },
+  { f: "transformador-tela", t: "Transformador", n: "Inspeção" },
   { f: "ensaio-painel", t: "Ensaio", n: "Instrumentação" },
-  { f: "ramal-entrada", t: "Ramal de entrada", n: "Ligação nova" },
-  { f: "gerador-manutencao", t: "Gerador", n: "Troca de filtros" },
   { f: "rede-aerea", t: "Rede aérea", n: "Poste" },
   { f: "disjuntor-mt", t: "Disjuntor de MT", n: "Manutenção" },
+  { f: "dreno-oleo", t: "Transformador", n: "Coleta de óleo" },
 ];
-
 const letreiro = ["Cabines primárias", "Subestações", "Média tensão", "Plantão 24h", "Ensaios e laudos", "Grupo gerador"];
 
 function Zap() {
@@ -126,7 +119,10 @@ export default function ShelbyExperience() {
     if (!calmo) document.documentElement.classList.add("anima");
     const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && e.target.classList.add("dentro")), { threshold: 0.18 });
     document.querySelectorAll(".surge").forEach((n) => io.observe(n));
-    return () => { removeEventListener("scroll", onScroll); io.disconnect(); };
+    const cta = document.querySelector(".palco-cta"), dock = document.querySelector(".dock");
+    const ioDock = new IntersectionObserver(([e]) => dock?.classList.toggle("visivel", !e.isIntersecting && e.boundingClientRect.top < 0));
+    if (cta) ioDock.observe(cta);
+    return () => { removeEventListener("scroll", onScroll); io.disconnect(); ioDock.disconnect(); };
   }, []);
 
   // vitrine arrastável com inércia
